@@ -17,7 +17,8 @@ const SignIn = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const Submit = () => {
-    console;
+    setIsSubmitting(true);
+    console.log(form);
   };
 
   return (
