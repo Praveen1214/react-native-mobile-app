@@ -1,95 +1,98 @@
-import { Image, View, Text, ScrollView } from "react-native";
-import { useState } from "react";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { images } from "../../constants";
-import FormFeild from "../../components/FormFeild";
-import CustomButton from "../../components/CustomButton";
-import { createUser } from "../../lib/appwrite";
-import { Link, router } from "expo-router";
+import { View, Text, ScrollView, Image, Alert } from 'react-native'
+import React, { useState } from 'react'
+import { SafeAreaView } from 'react-native-safe-area-context'
+import { images } from '../../constants'
+import FormField from '../../components/FormFeild'
+import CustomButton from '../../components/CustomButton'
+import { Link, useRouter } from 'expo-router'
+import { createUser } from '../../lib/appwrite'
 
 const SignUp = () => {
+  const router = useRouter();
+
   const [form, setForm] = useState({
-    username: "",
-    email: "",
-    password: "",
-  });
+    username: '',
+    email: '',
+    password: '',
+  })
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const Submit = async () => {
+  const submit = async () => {
     if (!form.username || !form.email || !form.password) {
-      setIsSubmitting(false);
-      return alert("Please fill all the fields");
+      Alert.alert('Error', 'Please fill all the fields')
+      return;
     }
     setIsSubmitting(true);
+
     try {
-      const result = await createUser(form.email, form.password, form.username);
-      // Set user data in global storage
-      router.replace('/home');
+      const result = await createUser(form.email, form.password, form.username)
+      // set it to global state...
+      router.replace('/home')
     } catch (error) {
-      alert("Something went wrong");
+      Alert.alert('Error', error.message)
+    } finally {
       setIsSubmitting(false);
     }
-  };
+  }
 
   return (
     <SafeAreaView className="bg-primary h-full">
       <ScrollView>
-        <View className="w-full flex justify-center h-full px-4 my-6">
+        <View className="w-full justify-center h-full px-4 my-6">
           <Image
             source={images.logo}
-            resizeMode="contain"
-            className="w-[130px] h-[84px]"
+            resizeMode='contain'
+            className="w-[115px] [35px]"
           />
+          <Text className="text-2xl text-white text-semibold mt-10 font-psemibold">Sign up to Aora</Text>
 
-          <Text className="text-2xl font-semibold text-white mt-10 font-psemibold">
-            Sign Up to Aora
-          </Text>
-
-          <FormFeild
+          <FormField
             title="Username"
             value={form.username}
             handleChangeText={(e) => setForm({ ...form, username: e })}
             otherStyles="mt-10"
+            placeholder="Enter Username"
           />
-
-          <FormFeild
+          <FormField
             title="Email"
             value={form.email}
             handleChangeText={(e) => setForm({ ...form, email: e })}
             otherStyles="mt-7"
             keyboardType="email-address"
+            placeholder="Enter Email"
           />
-
-          <FormFeild
+          <FormField
             title="Password"
             value={form.password}
             handleChangeText={(e) => setForm({ ...form, password: e })}
             otherStyles="mt-7"
+            placeholder="Enter Password"
           />
 
           <CustomButton
             title="Sign Up"
-            handlePress={Submit}
+            handlePress={submit}
             containerStyles="mt-7"
             isLoading={isSubmitting}
           />
 
-          <View className="flex justify-center pt-5 flex-row gap-2">
+          <View className="justify-center pt-5 flex-row gap-2">
             <Text className="text-lg text-gray-100 font-pregular">
               Have an account already?
             </Text>
             <Link
               href="/sign-in"
-              className="text-lg font-psemibold text-secondary"
+              className='text-lg font-psemibold text-secondary'
             >
-              Login
+              Sign In
             </Link>
           </View>
+
         </View>
       </ScrollView>
     </SafeAreaView>
-  );
-};
+  )
+}
 
-export default SignUp;
+export default SignUp
