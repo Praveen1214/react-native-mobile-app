@@ -1,23 +1,44 @@
-import { View, Text, FlatList,Image } from "react-native";
-import React from "react";
+import { View, Text, FlatList, Image, RefreshControl, Alert } from "react-native";
+import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { images } from "../../constants";
 import SearchInput from "../../components/Searchinput";
+import Trending from "../../components/Trending";
+import EmptyState from "../../components/EmptyState";
+import useAppWrite from "../../lib/useAppWrite";
+import { getAllPosts } from "../../lib/appwrite";
+import VideoCard from "../../components/VideoCard";
+
 
 
 const Home = () => {
+
+  const{ data : posts,refetch} = useAppWrite(getAllPosts);
+
+  const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await refetch();
+    setRefreshing(false);
+  }
+
+  console.log(posts);
   return (
-    <SafeAreaView className="bg-primary">
+    <SafeAreaView className="bg-primary h-full">
       <FlatList
-        data={[{ id: 1 }, { id: 2 }, { id: 3 }]}
-        keyExtractor={(item) => item.id.toString()}
+        data={posts}
+        keyExtractor={(item) => item.$id}
         renderItem={({ item }) => (
-          <Text className="text-3xl text-white">{item.id}</Text>
+          <VideoCard
+            video = {item}
+          />
+
         )}
         ListHeaderComponent={() => (
-          <View className="my-6 px-4 space-y-4"> 
+          <View className="my-6 px-4 space-y-4">
             <View className="flex justify-between items-start flex-row mb-6">
-            <View>
+              <View>
                 <Text className="font-pmedium text-sm text-gray-100">
                   Welcome Back
                 </Text>
@@ -34,8 +55,24 @@ const Home = () => {
               </View>
             </View>
             <SearchInput />
+
+            <View className="w-full flex-1 pt-5 pb-8">
+              <Text className="text-gray-100 text-lg font-pregular mb-3">
+                Trending Videos
+              </Text>
+              <Trending posts={[{ id: 1 }, { id: 2 }, { id: 3 }] ?? []} />
+            </View>
           </View>
         )}
+        ListEmptyComponent={() => (
+          <EmptyState
+            title="Be the first to share a video"
+            subtitle="No videos found"
+          />
+        )}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
       />
     </SafeAreaView>
   );
