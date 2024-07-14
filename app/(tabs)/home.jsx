@@ -1,4 +1,11 @@
-import { View, Text, FlatList, Image, RefreshControl, Alert } from "react-native";
+import {
+  View,
+  Text,
+  FlatList,
+  Image,
+  RefreshControl,
+  Alert,
+} from "react-native";
 import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { images } from "../../constants";
@@ -6,14 +13,13 @@ import SearchInput from "../../components/Searchinput";
 import Trending from "../../components/Trending";
 import EmptyState from "../../components/EmptyState";
 import useAppWrite from "../../lib/useAppWrite";
-import { getAllPosts } from "../../lib/appwrite";
+import { getAllPosts, getLatestPost } from "../../lib/appwrite";
 import VideoCard from "../../components/VideoCard";
 
-
-
 const Home = () => {
+  const { data: posts, refetch } = useAppWrite(getAllPosts);
 
-  const{ data : posts,refetch} = useAppWrite(getAllPosts);
+  const { data: latestPost } = useAppWrite(getLatestPost);
 
   const [refreshing, setRefreshing] = useState(false);
 
@@ -21,20 +27,15 @@ const Home = () => {
     setRefreshing(true);
     await refetch();
     setRefreshing(false);
-  }
+  };
 
-  console.log(posts);
+  console.log(latestPost);
   return (
     <SafeAreaView className="bg-primary h-full">
       <FlatList
         data={posts}
         keyExtractor={(item) => item.$id}
-        renderItem={({ item }) => (
-          <VideoCard
-            video = {item}
-          />
-
-        )}
+        renderItem={({ item }) => <VideoCard video={item} />}
         ListHeaderComponent={() => (
           <View className="my-6 px-4 space-y-4">
             <View className="flex justify-between items-start flex-row mb-6">
@@ -57,10 +58,11 @@ const Home = () => {
             <SearchInput />
 
             <View className="w-full flex-1 pt-5 pb-8">
-              <Text className="text-gray-100 text-lg font-pregular mb-3">
-                Trending Videos
+              <Text className="text-lg font-pregular text-gray-100 mb-3">
+                Latest Videos
               </Text>
-              <Trending posts={[{ id: 1 }, { id: 2 }, { id: 3 }] ?? []} />
+
+              <Trending posts={latestPost ?? []} />
             </View>
           </View>
         )}
