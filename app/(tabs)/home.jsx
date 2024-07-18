@@ -9,17 +9,19 @@ import {
 import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { images } from "../../constants";
-import SearchInput from "../../components/Searchinput";
+import SearchInput from "../../components/SearchInput";
 import Trending from "../../components/Trending";
 import EmptyState from "../../components/EmptyState";
 import useAppWrite from "../../lib/useAppWrite";
-import { getAllPosts, getLatestPost } from "../../lib/appwrite";
+import { getAllPosts, getLatesPosts } from "../../lib/appwrite";
 import VideoCard from "../../components/VideoCard";
 
 const Home = () => {
   const { data: posts, refetch } = useAppWrite(getAllPosts);
+  
+  const { data: latestPosts } = useAppWrite(getLatesPosts);
 
-  const { data: latestPost } = useAppWrite(getLatestPost);
+  console.log(latestPosts);
 
   const [refreshing, setRefreshing] = useState(false);
 
@@ -29,7 +31,6 @@ const Home = () => {
     setRefreshing(false);
   };
 
-  console.log(latestPost);
   return (
     <SafeAreaView className="bg-primary h-full">
       <FlatList
@@ -62,7 +63,7 @@ const Home = () => {
                 Latest Videos
               </Text>
 
-              <Trending posts={latestPost ?? []} />
+              <Trending posts={latestPosts ?? []} />
             </View>
           </View>
         )}

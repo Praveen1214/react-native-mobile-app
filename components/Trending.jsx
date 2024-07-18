@@ -1,13 +1,15 @@
-import { View, Text ,FlatList } from 'react-native'
+import { View, Text, FlatList, TouchableOpacity, ImageBackground, Image } from 'react-native'
 import React, { useState } from 'react'
-import  * as Animatable from 'react-native-animatable'
+import * as Animatable from 'react-native-animatable'
+import { icons } from '../constants'
+import { Video, ResizeMode } from 'expo-av'
 
 const zoomIn = {
   0: {
     scale: 0,
   },
   1: {
-    scale: 0.9,
+    scale: 1.1,
   },
 }
 
@@ -73,14 +75,25 @@ const TrendingItem = ({activeItem,item} ) => {
 const Trending = ( {posts}) => {
 
   const [activeItem, setActiveItem] = useState(posts[0])
+
+  const viewableItemsChanged = ({ viewableItems }) => {
+    if (viewableItems.length > 0) {
+      setActiveItem(viewableItems[0].key);
+    }
+  };
   return (
-    <FlatList 
-        data={posts}
-        keyExtractor={(item) => item.$id}
-        renderItem={({ item }) => (
-            <TrendingItem activeItem={activeItem} item={item}/>
-        )}
-        horizontal
+    <FlatList
+      data={posts}
+      horizontal
+      keyExtractor={(item) => item.$id}
+      renderItem={({ item }) => (
+        <TrendingItem activeItem={activeItem} item={item} />
+      )}
+      onViewableItemsChanged={viewableItemsChanged}
+      viewabilityConfig={{
+        itemVisiblePercentThreshold: 70,
+      }}
+      contentOffset={{ x: 170 }}
     />
   )
 }

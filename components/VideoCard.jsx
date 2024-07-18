@@ -4,7 +4,7 @@ import { View, Text, TouchableOpacity, Image } from "react-native";
 
 import { icons } from "../constants";
 
-const VideoCard = ({ video : {title, creator,username, thumbnail, avatar, video } }) => {
+const VideoCard = ({ video: { title, thumbnail, video, creator: { username, avatar } } }) => {
   const [play, setPlay] = useState(false);
 
   return (
