@@ -21,7 +21,7 @@ const Home = () => {
   
   const { data: latestPosts } = useAppWrite(getLatesPosts);
 
-  console.log(latestPosts);
+ 
 
   const [refreshing, setRefreshing] = useState(false);
 
